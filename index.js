@@ -1,19 +1,24 @@
+// https://www.npmjs.com/package/xmlhttprequest
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+
+// https://www.npmjs.com/package/slackbots
 var SlackBot = require('slackbots');
+
+// Settings file for the bot
 var Settings = require('./appsettings.json');
 
 
 
 //////////// Setup /////////////////
 
-// create a bot 
+// Add a bot https://my.slack.com/services/new/bot and put the token.
 var bot = new SlackBot({
-    token: Settings.botToken, // Add a bot https://my.slack.com/services/new/bot and put the token  
+    token: Settings.botToken, 
     name: 'Wubot'
 });
 
 var defaultMonkey = Settings.defaultIcon;
-//endpoint for booked rooms
+// Endpoint for booked rooms
 var bookedRooms = 'http://boka.gummifabriken.nu/api/schedule/getAsGuest/';
 var trainApi = 'http://api.trafikinfo.trafikverket.se/v1.2/data.json';
 
@@ -41,7 +46,7 @@ function randomIntFromInterval(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-//randomize monkeyface
+// Randomize monkeyface
 var getRandomMonkey = function () {
     switch (randomIntFromInterval(0, 2)) {
         case 0:
@@ -85,14 +90,14 @@ function getTrains(station){
 /////////////// Events ////////////////////
     
 bot.on('start', function () {
-    // more information about additional params https://api.slack.com/methods/chat.postMessage 
+    // More information about additional params https://api.slack.com/methods/chat.postMessage 
     var params = {
         icon_emoji: ':monkey_face:'
     };
 
     // Listens for a message event in any channel the bot is member.
     bot.on('message', function (data) {
-        // all ingoing events https://api.slack.com/rtm 
+        // All ingoing events https://api.slack.com/rtm 
         var channel = data.channel;
         var message = data.text;
 
@@ -154,25 +159,25 @@ bot.on('start', function () {
 
                         break;
                     case "help":
-                        bot.postMessage(channel, "'?sal <klass>' - kollar vilken sal som �r bokad f�r klass.\n'?help' - Tar fram detta meddelandet.", params);
+                        bot.postMessage(channel, "'?sal <klass>' - kollar vilken sal som ï¿½r bokad fï¿½r klass.\n'?help' - Tar fram detta meddelandet.", params);
                         break;
 
                     case "train":
                         var location;
 
                         switch (action) {
-                            case 'Jönköping':
-                                location = 'Jö';
-                                action = 'Jönköping';
-                            case 'Värnamo':
+                            case 'JÃ¶nkÃ¶ping':
+                                location = 'JÃ¶';
+                                action = 'JÃ¶nkÃ¶ping';
+                            case 'VÃ¤rnamo':
                                 location = 'V';
-                                action = 'Värnamo';
+                                action = 'VÃ¤rnamo';
                             default:
                                 location = 'V';
-                                action = 'Värnamo';
+                                action = 'VÃ¤rnamo';
                                 break;
                         }
-                        var response = 'Tåg från' + action + ' ( ͡° ͜ʖ ͡° )';
+                        var response = 'TÃ¥g frÃ¥n' + action + ' ( Í¡Â° ÍÊ Í¡Â° )';
                         var trains = getTrains(location);
                         for(var i = 0; i < trains.RESPONSE.RESULT[0].TrainAnnouncement.length; i++)
                         {
@@ -189,8 +194,8 @@ bot.on('start', function () {
                 }
             }
 
-            // words that the bot listens for and reacts to
-            if (formatted.indexOf("java ") !== -1) {
+            // Words that the bot listens for and reacts to
+            if (formatted.indexOf("java ") !== -1) { //TODO Fix so that if the next letter after the word is not a space, return without the bot posting a message.
                 params.icon_emoji = getRandomMonkey();
                 bot.postMessage(channel, "java...", params);
                 params.icon_emoji = defaultMonkey;
@@ -203,7 +208,7 @@ bot.on('start', function () {
                 params.icon_emoji = defaultMonkey;
                 return;
             }
-
+            // Gives a link to "let me google it for you" 
             if (formatted.indexOf("hur ") !== -1) {
                 var q = encodeURIComponent(data.text);
                 bot.postMessage(channel, 'http://lmgtfy.com/?q=' + q, params);
