@@ -1,19 +1,24 @@
+// https://www.npmjs.com/package/xmlhttprequest
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+
+// https://www.npmjs.com/package/slackbots
 var SlackBot = require('slackbots');
+
+// Settings file for the bot
 var Settings = require('./appsettings.json');
 
 
 
 //////////// Setup /////////////////
 
-// create a bot 
+// Add a bot https://my.slack.com/services/new/bot and put the token.
 var bot = new SlackBot({
-    token: Settings.botToken, // Add a bot https://my.slack.com/services/new/bot and put the token  
+    token: Settings.botToken, 
     name: 'Wubot'
 });
 
 var defaultMonkey = Settings.defaultIcon;
-//endpoint for booked rooms
+// Endpoint for booked rooms
 var bookedRooms = 'http://boka.gummifabriken.nu/api/schedule/getAsGuest/';
 
 
@@ -40,7 +45,7 @@ function randomIntFromInterval(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-//randomize monkeyface
+// Randomize monkeyface
 var getRandomMonkey = function () {
     switch (randomIntFromInterval(0, 2)) {
         case 0:
@@ -55,14 +60,14 @@ var getRandomMonkey = function () {
 /////////////// Events ////////////////////
     
 bot.on('start', function () {
-    // more information about additional params https://api.slack.com/methods/chat.postMessage 
+    // More information about additional params https://api.slack.com/methods/chat.postMessage 
     var params = {
         icon_emoji: ':monkey_face:'
     };
 
     // Listens for a message event in any channel the bot is member.
     bot.on('message', function (data) {
-        // all ingoing events https://api.slack.com/rtm 
+        // All ingoing events https://api.slack.com/rtm 
         var channel = data.channel;
         var message = data.text;
 
@@ -124,7 +129,7 @@ bot.on('start', function () {
 
                         break;
                     case "help":
-                        bot.postMessage(channel, "'?sal <klass>' - kollar vilken sal som är bokad för klass.\n'?help' - Tar fram detta meddelandet.", params);
+                        bot.postMessage(channel, "'?sal <params>' - kollar vilken sal som är bokad baserat på params.\n'?help' - Tar fram detta meddelandet.", params);
                         break;
                     default:
                         bot.postMessage(channel, "Finns inget matchande kommando!", { icon_emoji: ":x:" });
@@ -132,8 +137,8 @@ bot.on('start', function () {
                 }
             }
 
-            // words that the bot listens for and reacts to
-            if (formatted.indexOf("java ") !== -1) {
+            // Words that the bot listens for and reacts to
+            if (formatted.indexOf("java ") !== -1) { //TODO Fix so that if the next letter after the word is not a space, return without the bot posting a message.
                 params.icon_emoji = getRandomMonkey();
                 bot.postMessage(channel, "java...", params);
                 params.icon_emoji = defaultMonkey;
@@ -146,7 +151,7 @@ bot.on('start', function () {
                 params.icon_emoji = defaultMonkey;
                 return;
             }
-
+            // Gives a link to "let me google it for you" 
             if (formatted.indexOf("hur ") !== -1) {
                 var q = encodeURIComponent(data.text);
                 bot.postMessage(channel, 'http://lmgtfy.com/?q=' + q, params);
