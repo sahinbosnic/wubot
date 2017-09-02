@@ -2,7 +2,7 @@
 A Project for Webbutvecklare.NET at Campus Värnamo. Wubot is a slack bot.
 
 
-##Commands
+## Commands
 
 `?help` - Displays a list of possible commands
 
