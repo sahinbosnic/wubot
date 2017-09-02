@@ -159,25 +159,25 @@ bot.on('start', function () {
 
                         break;
                     case "help":
-                        bot.postMessage(channel, "'?sal <klass>' - kollar vilken sal som ï¿½r bokad fï¿½r klass.\n'?help' - Tar fram detta meddelandet.", params);
+                        bot.postMessage(channel, "'?sal <klass>' - kollar vilken sal som är bokad för klass.\n'?help' - Tar fram detta meddelandet.", params);
                         break;
 
                     case "train":
                         var location;
 
                         switch (action) {
-                            case 'JÃ¶nkÃ¶ping':
-                                location = 'JÃ¶';
-                                action = 'JÃ¶nkÃ¶ping';
+                            case 'Jönköping':
+                                location = 'Jö';
+                                action = 'Jönköping';
                             case 'VÃ¤rnamo':
                                 location = 'V';
-                                action = 'VÃ¤rnamo';
+                                action = 'Värnamo';
                             default:
                                 location = 'V';
-                                action = 'VÃ¤rnamo';
+                                action = 'Värnamo';
                                 break;
                         }
-                        var response = 'TÃ¥g frÃ¥n' + action + ' ( Í¡Â° ÍÊ Í¡Â° )';
+                        var response = 'Tåg från' + action;
                         var trains = getTrains(location);
                         for(var i = 0; i < trains.RESPONSE.RESULT[0].TrainAnnouncement.length; i++)
                         {
