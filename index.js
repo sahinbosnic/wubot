@@ -59,9 +59,11 @@ var getRandomMonkey = function () {
 }
 
 function getTrains(station){
+    var date = new Date();
+    var timeFrom = date.toLocaleTimeString()
     var xml = new XMLHttpRequest();
     xml.open("POST", trainApi, false);
-    http.setRequestHeader('Content-type', 'text/xml');
+    xml.setRequestHeader('Content-Type', 'text/xml');
     var data =  '<REQUEST>' +
       '<LOGIN authenticationkey="7c616dd6b1a7439094089f68142e835a" />' +
       '<QUERY objecttype="TrainAnnouncement" orderby="AdvertisedTimeAtLocation">' +
@@ -71,8 +73,8 @@ function getTrains(station){
                         '<EQ name="LocationSignature" value="' + station + '" />' +
                         '<OR>' +
                               '<AND>' +
-                                    '<GT name="AdvertisedTimeAtLocation" value="$dateadd(00:00:00)" />' +
-                                    '<LT name="AdvertisedTimeAtLocation" value="$dateadd(23:59:59)" />' +
+                                    '<GT name="AdvertisedTimeAtLocation" value="' + timeFrom +  '" />' +
+                                    '<LT name="AdvertisedTimeAtLocation" value="$dateadd(12:00:00)" />' +
                               '</AND>' +
                         '</OR>' +
                   '</AND>' +
@@ -84,7 +86,7 @@ function getTrains(station){
       '</QUERY>' +
        '</REQUEST>';
     xml.send(data);
-    return xml.responseText;
+    return JSON.parse(xml.responseText);
 }
 
 /////////////// Events ////////////////////
@@ -164,28 +166,39 @@ bot.on('start', function () {
 
                     case "train":
                         var location;
+                        var toLocation;
+                        var toLocationLong;
 
                         switch (action) {
-                            case 'Jönköping':
+                            case 'JÖNKÖPING':
                                 location = 'Jö';
+                                toLocation = 'V';
+                                toLocationLong = 'Värnamo'
                                 action = 'Jönköping';
-                            case 'VÃ¤rnamo':
+                                break;
+                            case 'VÄRNAMO':
+                                toLocation = 'Jö';
+                                toLocationLong = 'Jönköping'                                
                                 location = 'V';
                                 action = 'Värnamo';
+                                break;
                             default:
+                                toLocation = 'Jö';
+                                toLocationLong = 'Jönköping'                                
                                 location = 'V';
                                 action = 'Värnamo';
                                 break;
                         }
-                        var response = 'Tåg från' + action;
+                        var response = '---Tåg från ' + action + '---';
                         var trains = getTrains(location);
                         for(var i = 0; i < trains.RESPONSE.RESULT[0].TrainAnnouncement.length; i++)
                         {
-                            if(trains.RESPONSE.RESULT[0].TrainAnnouncement[i].ToLocation[0].LocationName == location)
+                            if(trains.RESPONSE.RESULT[0].TrainAnnouncement[i].ToLocation[0].LocationName == toLocation)
                             {
-                                response += '\n Till' + trains.RESPONSE.RESULT[0].TrainAnnouncement[i].ToLocation[0].LocationName + ' : ' + trains.RESPONSE.RESULT[0].TrainAnnouncement[i].split('T').pop();
+                                response += '\n Till ' + toLocationLong + ' : ' + trains.RESPONSE.RESULT[0].TrainAnnouncement[i].AdvertisedTimeAtLocation.split('T').pop();
                             }
                         };
+                        response += '\n -------------------------';
                         bot.postMessage(channel, response, params);
                         break;
                     default:
