@@ -20,6 +20,7 @@ var bot = new SlackBot({
 var defaultMonkey = Settings.defaultIcon;
 // Endpoint for booked rooms
 var bookedRooms = 'http://boka.gummifabriken.nu/api/schedule/getAsGuest/';
+var trainApi = 'http://api.trafikinfo.trafikverket.se/v1.2/data.json';
 
 
 
@@ -55,6 +56,37 @@ var getRandomMonkey = function () {
         case 2:
             return ":speak_no_evil:";
     }
+}
+
+function getTrains(station){
+    var date = new Date();
+    var timeFrom = date.toLocaleTimeString()
+    var xml = new XMLHttpRequest();
+    xml.open("POST", trainApi, false);
+    xml.setRequestHeader('Content-Type', 'text/xml');
+    var data =  '<REQUEST>' +
+      '<LOGIN authenticationkey="7c616dd6b1a7439094089f68142e835a" />' +
+      '<QUERY objecttype="TrainAnnouncement" orderby="AdvertisedTimeAtLocation">' +
+            '<FILTER>' +
+                  '<AND>' +
+                        '<EQ name="ActivityType" value="Avgang" />' +
+                        '<EQ name="LocationSignature" value="' + station + '" />' +
+                        '<OR>' +
+                              '<AND>' +
+                                    '<GT name="AdvertisedTimeAtLocation" value="' + timeFrom +  '" />' +
+                                    '<LT name="AdvertisedTimeAtLocation" value="$dateadd(12:00:00)" />' +
+                              '</AND>' +
+                        '</OR>' +
+                  '</AND>' +
+            '</FILTER> ' +
+            '<INCLUDE>AdvertisedTrainIdent</INCLUDE>' +
+            '<INCLUDE>AdvertisedTimeAtLocation</INCLUDE>' +
+            '<INCLUDE>TrackAtLocation</INCLUDE>' +
+            '<INCLUDE>ToLocation</INCLUDE>' +
+      '</QUERY>' +
+       '</REQUEST>';
+    xml.send(data);
+    return JSON.parse(xml.responseText);
 }
 
 /////////////// Events ////////////////////
@@ -129,7 +161,45 @@ bot.on('start', function () {
 
                         break;
                     case "help":
-                        bot.postMessage(channel, "'?sal <params>' - kollar vilken sal som �r bokad baserat p� params.\n'?help' - Tar fram detta meddelandet.", params);
+                        bot.postMessage(channel, "'?sal <klass>' - kollar vilken sal som är bokad för klass.\n'?help' - Tar fram detta meddelandet.", params);
+                        break;
+
+                    case "train":
+                        var location;
+                        var toLocation;
+                        var toLocationLong;
+
+                        switch (action) {
+                            case 'JÖNKÖPING':
+                                location = 'Jö';
+                                toLocation = 'V';
+                                toLocationLong = 'Värnamo'
+                                action = 'Jönköping';
+                                break;
+                            case 'VÄRNAMO':
+                                toLocation = 'Jö';
+                                toLocationLong = 'Jönköping'                                
+                                location = 'V';
+                                action = 'Värnamo';
+                                break;
+                            default:
+                                toLocation = 'Jö';
+                                toLocationLong = 'Jönköping'                                
+                                location = 'V';
+                                action = 'Värnamo';
+                                break;
+                        }
+                        var response = '---Tåg från ' + action + '---';
+                        var trains = getTrains(location);
+                        for(var i = 0; i < trains.RESPONSE.RESULT[0].TrainAnnouncement.length; i++)
+                        {
+                            if(trains.RESPONSE.RESULT[0].TrainAnnouncement[i].ToLocation[0].LocationName == toLocation)
+                            {
+                                response += '\n Till ' + toLocationLong + ' : ' + trains.RESPONSE.RESULT[0].TrainAnnouncement[i].AdvertisedTimeAtLocation.split('T').pop();
+                            }
+                        };
+                        response += '\n -------------------------';
+                        bot.postMessage(channel, response, params);
                         break;
                     default:
                         bot.postMessage(channel, "Finns inget matchande kommando!", { icon_emoji: ":x:" });
