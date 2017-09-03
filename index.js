@@ -1,11 +1,17 @@
 // https://www.npmjs.com/package/xmlhttprequest
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+//var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 // https://www.npmjs.com/package/slackbots
 var SlackBot = require('slackbots');
 
 // Settings file for the bot
 var Settings = require('./appsettings.json');
+
+var BookedRoom = require('./bookedroom.js');
+
+var Helpers = require('./helpers.js');
+
+var Train = require('./train.js');
 
 
 
@@ -18,76 +24,8 @@ var bot = new SlackBot({
 });
 
 var defaultMonkey = Settings.defaultIcon;
-// Endpoint for booked rooms
-var bookedRooms = 'http://boka.gummifabriken.nu/api/schedule/getAsGuest/';
-var trainApi = 'http://api.trafikinfo.trafikverket.se/v1.2/data.json';
 
 
-
-//////////// Helpers ///////////////
-
-// GET function
-function httpGet(theUrl) {
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("GET", theUrl, false);
-    xmlHttp.send(null);
-    return xmlHttp.responseText;
-}
-
-// Add zero
-function addZero(i) {
-    if (i < 10) {
-        i = "0" + i;
-    }
-    return i;
-}
-
-function randomIntFromInterval(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-// Randomize monkeyface
-var getRandomMonkey = function () {
-    switch (randomIntFromInterval(0, 2)) {
-        case 0:
-            return ":see_no_evil:";
-        case 1:
-            return ":hear_no_evil:";
-        case 2:
-            return ":speak_no_evil:";
-    }
-}
-
-function getTrains(station){
-    var date = new Date();
-    var timeFrom = date.toLocaleTimeString()
-    var xml = new XMLHttpRequest();
-    xml.open("POST", trainApi, false);
-    xml.setRequestHeader('Content-Type', 'text/xml');
-    var data =  '<REQUEST>' +
-      '<LOGIN authenticationkey="7c616dd6b1a7439094089f68142e835a" />' +
-      '<QUERY objecttype="TrainAnnouncement" orderby="AdvertisedTimeAtLocation">' +
-            '<FILTER>' +
-                  '<AND>' +
-                        '<EQ name="ActivityType" value="Avgang" />' +
-                        '<EQ name="LocationSignature" value="' + station + '" />' +
-                        '<OR>' +
-                              '<AND>' +
-                                    '<GT name="AdvertisedTimeAtLocation" value="' + timeFrom +  '" />' +
-                                    '<LT name="AdvertisedTimeAtLocation" value="$dateadd(12:00:00)" />' +
-                              '</AND>' +
-                        '</OR>' +
-                  '</AND>' +
-            '</FILTER> ' +
-            '<INCLUDE>AdvertisedTrainIdent</INCLUDE>' +
-            '<INCLUDE>AdvertisedTimeAtLocation</INCLUDE>' +
-            '<INCLUDE>TrackAtLocation</INCLUDE>' +
-            '<INCLUDE>ToLocation</INCLUDE>' +
-      '</QUERY>' +
-       '</REQUEST>';
-    xml.send(data);
-    return JSON.parse(xml.responseText);
-}
 
 /////////////// Events ////////////////////
     
@@ -120,86 +58,14 @@ bot.on('start', function () {
                 // Take commands that were prefixed with ?
                 switch (command) {
                     case "sal":
-
-                        // Will kick if there is no action specified
-                        if (formatted.indexOf(" ") === -1) { //TODO 
-                            bot.postMessage(channel, "Felaktigt kommando.", params);
-                            return;
-                        }
-
-                        var response = httpGet(bookedRooms);
-
-                        var parsedData = JSON.parse(response);
-
-                        var bookings = parsedData.bookings.filter(function (x) {
-                            var name = x.text.toUpperCase();
-
-                            if (name.indexOf(action) !== -1) {
-                                return x;
-                            }
-                        });
-
-                        var reply = "----------------\n";
-                        var resources = parsedData.resources.filter(function (x) {
-                            if (bookings.length >= 0) {
-                                for (var i = 0; i < bookings.length; i++) {
-                                    if (bookings[i].resource == x.id) {
-                                        var startFull = new Date(bookings[i].start);
-                                        var start = addZero(startFull.getHours()) + ":" + addZero(startFull.getMinutes());
-                                        var endFull = new Date(bookings[i].end)
-                                        var end = addZero(endFull.getHours()) + ":" + addZero(endFull.getMinutes());
-
-                                        reply += "*" + bookings[i].text.split(",")[0] + "*\n" + start + "-" + end + " \n" + x.name + " \n----------------\n";
-
-                                        return x;
-                                    }
-                                }
-                            }
-                        });
-
-                        bot.postMessage(channel, reply, params);
-
+                        BookedRoom.bookedRoom(formatted, action, bot, channel, params);
                         break;
                     case "help":
                         bot.postMessage(channel, "'?sal <klass>' - kollar vilken sal som är bokad för klass.\n'?help' - Tar fram detta meddelandet.", params);
                         break;
 
                     case "train":
-                        var location;
-                        var toLocation;
-                        var toLocationLong;
-
-                        switch (action) {
-                            case 'JÖNKÖPING':
-                                location = 'Jö';
-                                toLocation = 'V';
-                                toLocationLong = 'Värnamo'
-                                action = 'Jönköping';
-                                break;
-                            case 'VÄRNAMO':
-                                toLocation = 'Jö';
-                                toLocationLong = 'Jönköping'                                
-                                location = 'V';
-                                action = 'Värnamo';
-                                break;
-                            default:
-                                toLocation = 'Jö';
-                                toLocationLong = 'Jönköping'                                
-                                location = 'V';
-                                action = 'Värnamo';
-                                break;
-                        }
-                        var response = '---Tåg från ' + action + '---';
-                        var trains = getTrains(location);
-                        for(var i = 0; i < trains.RESPONSE.RESULT[0].TrainAnnouncement.length; i++)
-                        {
-                            if(trains.RESPONSE.RESULT[0].TrainAnnouncement[i].ToLocation[0].LocationName == toLocation)
-                            {
-                                response += '\n Till ' + toLocationLong + ' : ' + trains.RESPONSE.RESULT[0].TrainAnnouncement[i].AdvertisedTimeAtLocation.split('T').pop();
-                            }
-                        };
-                        response += '\n -------------------------';
-                        bot.postMessage(channel, response, params);
+                        Train.train(action, bot, channel, params);
                         break;
                     default:
                         bot.postMessage(channel, "Finns inget matchande kommando!", { icon_emoji: ":x:" });
