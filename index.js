@@ -1,6 +1,3 @@
-// https://www.npmjs.com/package/xmlhttprequest
-//var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-
 // https://www.npmjs.com/package/slackbots
 var SlackBot = require('slackbots');
 
@@ -61,9 +58,14 @@ bot.on('start', function () {
                         BookedRoom.bookedRoom(formatted, action, bot, channel, params);
                         break;
                     case "help":
-                        bot.postMessage(channel, "'?sal <klass>' - kollar vilken sal som är bokad för klass.\n'?help' - Tar fram detta meddelandet.", params);
-                        break;
+                        var bookedRoomDescription = Helpers.blockquoteBuilder('Bokad sal', '?sal <params>', 'Kollar vilken sal som är bokad baserat på params. tex. `wu16`');
+                        var helpDescription = Helpers.blockquoteBuilder('Hjälp', '?help', 'Tar fram detta meddelandet.');
+                        var trainDescription = Helpers.blockquoteBuilder('Tågresa', '?train <params>', 'Skriv antingen `värnamo` eller `jönköping` för att få rätt tid.')
 
+                        bot.postMessage(channel, bookedRoomDescription, params);
+                        bot.postMessage(channel, helpDescription, params);
+                        bot.postMessage(channel, trainDescription, params);
+                        break;
                     case "train":
                         Train.train(action, bot, channel, params);
                         break;
@@ -75,14 +77,14 @@ bot.on('start', function () {
 
             // Words that the bot listens for and reacts to
             if (formatted.indexOf("java ") !== -1) { //TODO Fix so that if the next letter after the word is not a space, return without the bot posting a message.
-                params.icon_emoji = getRandomMonkey();
+                params.icon_emoji = Helpers.getRandomMonkey();
                 bot.postMessage(channel, "java...", params);
                 params.icon_emoji = defaultMonkey;
                 return;
             }
 
             if (formatted.indexOf("php ") !== -1) {
-                params.icon_emoji = getRandomMonkey();
+                params.icon_emoji = Helpers.getRandomMonkey();
                 bot.postMessage(channel, "php...", params);
                 params.icon_emoji = defaultMonkey;
                 return;

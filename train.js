@@ -20,6 +20,7 @@ module.exports = {
                 toLocationLong = 'Jönköping'
                 location = 'V';
                 action = 'Värnamo';
+                console.log(action + "värnamo")
                 break;
             default:
                 toLocation = 'Jö';
@@ -28,8 +29,10 @@ module.exports = {
                 action = 'Värnamo';
                 break;
         }
+
         var response = '---Tåg från ' + action + '---';
         var trains = Helpers.getTrains(location, trainApi);
+        
         for (var i = 0; i < trains.RESPONSE.RESULT[0].TrainAnnouncement.length; i++) {
             if (trains.RESPONSE.RESULT[0].TrainAnnouncement[i].ToLocation[0].LocationName == toLocation) {
                 response += '\n Till ' + toLocationLong + ' : ' + trains.RESPONSE.RESULT[0].TrainAnnouncement[i].AdvertisedTimeAtLocation.split('T').pop();

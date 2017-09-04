@@ -1,3 +1,4 @@
+// https://www.npmjs.com/package/xmlhttprequest
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 module.exports = {
@@ -17,7 +18,7 @@ module.exports = {
         return Math.floor(Math.random() * (max - min + 1) + min);
     },
     getRandomMonkey: function () {
-        switch (randomIntFromInterval(0, 2)) {
+        switch (this.randomIntFromInterval(0, 2)) {
             case 0:
                 return ":see_no_evil:";
             case 1:
@@ -55,5 +56,23 @@ module.exports = {
             '</REQUEST>';
         xml.send(data);
         return JSON.parse(xml.responseText);
+    },
+    blockquoteBuilder: function (title, command, description) {
+
+        if (title !== 'null') {
+            var markup = '>>> *' + title + '*\n`' + command + '` - ' + description + '\n';
+            return markup;
+        }
+
+        if (title === 'null') {
+            var markup = '`' + command + '` - ' + description + '\n';
+            return markup;
+        }
+        
+        //else {
+        //    var markup = '>>> *' + title + '*\n`' + command + '` - ' + description;
+        //    return markup;
+        //}
+        
     }
 }
