@@ -60,13 +60,11 @@ module.exports = {
     blockquoteBuilder: function (title, command, description) {
 
         if (title !== 'null') {
-            var markup = '>>> *' + title + '*\n`' + command + '` - ' + description + '\n';
-            return markup;
+            return '>>> *' + title + '*\n`' + command + '` - ' + description + '\n';
         }
 
         if (title === 'null') {
-            var markup = '`' + command + '` - ' + description + '\n';
-            return markup;
+            return '`' + command + '` - ' + description + '\n';
         }
         
     }

@@ -10,6 +10,8 @@ var Helpers = require('./helpers.js');
 
 var Train = require('./train.js');
 
+var Sup = require('./sup.js');
+
 
 
 //////////// Setup /////////////////
@@ -59,15 +61,22 @@ bot.on('start', function () {
                         break;
                     case "help":
                         var bookedRoomDescription = Helpers.blockquoteBuilder('Bokad sal', '?sal <params>', 'Kollar vilken sal som är bokad baserat på params. tex. `wu16`');
-                        var helpDescription = Helpers.blockquoteBuilder('Hjälp', '?help', 'Tar fram detta meddelandet.');
                         var trainDescription = Helpers.blockquoteBuilder('Tågresa', '?train <params>', 'Skriv antingen `värnamo` eller `jönköping` för att få rätt tid.');
+                        var supDescription = Helpers.blockquoteBuilder('Hälsning', '?sup <username>', 'Skriv in en användare så hälsar Wubot på hen.');
+                        var helpDescription = Helpers.blockquoteBuilder('Hjälp', '?help', 'Tar fram detta meddelandet.');
 
+                        
                         bot.postMessage(channel, bookedRoomDescription, params);
-                        bot.postMessage(channel, helpDescription, params);
                         bot.postMessage(channel, trainDescription, params);
+                        bot.postMessage(channel, supDescription, params);
+                        bot.postMessage(channel, helpDescription, params);
+                        
                         break;
                     case "train":
                         Train.train(action, bot, channel, params);
+                        break;
+                    case "sup":    
+                        Sup.sup(formatted, action, bot, channel, params);                       
                         break;
                     default:
                         bot.postMessage(channel, "Finns inget matchande kommando!", { icon_emoji: ":x:" });
