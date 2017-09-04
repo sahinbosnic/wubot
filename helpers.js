@@ -69,10 +69,5 @@ module.exports = {
             return markup;
         }
         
-        //else {
-        //    var markup = '>>> *' + title + '*\n`' + command + '` - ' + description;
-        //    return markup;
-        //}
-        
     }
 }

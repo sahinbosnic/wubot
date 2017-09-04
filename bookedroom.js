@@ -23,7 +23,8 @@ module.exports = {
             }
         });
 
-        var reply = "----------------\n";
+        //var reply = "----------------\n";
+        var reply;
         var resources = parsedData.resources.filter(function (x) {
             if (bookings.length >= 0) {
                 for (var i = 0; i < bookings.length; i++) {
@@ -33,7 +34,8 @@ module.exports = {
                         var endFull = new Date(bookings[i].end)
                         var end = Helpers.addZero(endFull.getHours()) + ":" + Helpers.addZero(endFull.getMinutes());
 
-                        reply += "*" + bookings[i].text.split(",")[0] + "*\n" + start + "-" + end + " \n" + x.name + " \n----------------\n";
+                        //reply += "*" + bookings[i].text.split(",")[0] + "*\n" + start + "-" + end + " \n" + x.name + " \n----------------\n";
+                        reply = Helpers.blockquoteBuilder(bookings[i].text.split(",")[0], start + "-" + end, x.name);
 
                         return x;
                     }

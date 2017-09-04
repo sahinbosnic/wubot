@@ -60,7 +60,7 @@ bot.on('start', function () {
                     case "help":
                         var bookedRoomDescription = Helpers.blockquoteBuilder('Bokad sal', '?sal <params>', 'Kollar vilken sal som är bokad baserat på params. tex. `wu16`');
                         var helpDescription = Helpers.blockquoteBuilder('Hjälp', '?help', 'Tar fram detta meddelandet.');
-                        var trainDescription = Helpers.blockquoteBuilder('Tågresa', '?train <params>', 'Skriv antingen `värnamo` eller `jönköping` för att få rätt tid.')
+                        var trainDescription = Helpers.blockquoteBuilder('Tågresa', '?train <params>', 'Skriv antingen `värnamo` eller `jönköping` för att få rätt tid.');
 
                         bot.postMessage(channel, bookedRoomDescription, params);
                         bot.postMessage(channel, helpDescription, params);
