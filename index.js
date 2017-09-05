@@ -61,7 +61,7 @@ bot.on('start', function () {
                         break;
                     case "help":
                         var bookedRoomDescription = Helpers.blockquoteBuilder('Bokad sal', '?sal <params>', 'Kollar vilken sal som är bokad baserat på params. tex. `wu16`');
-                        var trainDescription = Helpers.blockquoteBuilder('Tågresa', '?train <params>', 'Skriv antingen `värnamo` eller `jönköping` för att få rätt tid.');
+                        var trainDescription = Helpers.blockquoteBuilder('Tågresa', '?train <params>', 'Skriv antingen `VNMO` eller `JKPG` för att få rätt tid.');
                         var supDescription = Helpers.blockquoteBuilder('Hälsning', '?sup <username>', 'Skriv in en användare så hälsar Wubot på hen.');
                         var helpDescription = Helpers.blockquoteBuilder('Hjälp', '?help', 'Tar fram detta meddelandet.');
 
@@ -75,9 +75,14 @@ bot.on('start', function () {
                     case "train":
                         Train.train(action, bot, channel, params);
                         break;
+                    case "jquery":
+                        bot.postMessage(channel, "http://io.gwiddle.co.uk/needsmorejquery/", params);     
                     case "sup":    
                         Sup.sup(formatted, action, bot, channel, params);                       
                         break;
+                    case "links":
+                        Helpers.getLinks(bot, channel, params);
+                        break;     
                     default:
                         bot.postMessage(channel, "Finns inget matchande kommando!", { icon_emoji: ":x:" });
                         break;

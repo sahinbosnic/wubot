@@ -9,28 +9,28 @@ module.exports = {
         var toLocationLong;
 
         switch (action) {
-            case 'JÖNKÖPING':
-                location = 'Jö';
+            case 'JKPG':
+                location = 'JÃ¶';
                 toLocation = 'V';
-                toLocationLong = 'Värnamo'
-                action = 'Jönköping';
+                toLocationLong = 'VÃ¶rnamo'
+                action = 'JÃ¶nkÃ¶ping';
                 break;
-            case 'VÄRNAMO':
-                toLocation = 'Jö';
-                toLocationLong = 'Jönköping'
+            case 'VNMO':
+                toLocation = 'JÃ¶';
+                toLocationLong = 'JÃ¶nkÃ¶ping'
                 location = 'V';
-                action = 'Värnamo';
-                console.log(action + "värnamo")
+                action = 'VÃ¤rnamo';
+                console.log(action + "VÃ¤rnamo")
                 break;
             default:
-                toLocation = 'Jö';
-                toLocationLong = 'Jönköping'
+                toLocation = 'JÃ¶';
+                toLocationLong = 'JÃ¶nkÃ¶ping'
                 location = 'V';
-                action = 'Värnamo';
+                action = 'VÃ¤rnamo';
                 break;
         }
 
-        var response = '---Tåg från ' + action + '---';
+        var response = '---TÃ¥g frÃ¥n ' + action + '---';
         var trains = Helpers.getTrains(location, trainApi);
         
         for (var i = 0; i < trains.RESPONSE.RESULT[0].TrainAnnouncement.length; i++) {
