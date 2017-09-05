@@ -39,7 +39,7 @@ bot.on('start', function () {
         // All ingoing events https://api.slack.com/rtm 
         var channel = data.channel;
         var message = data.text;
-
+        
         if (message !== undefined && data.user !== undefined) {
             var formatted = message.toLowerCase().trim();
 
@@ -53,7 +53,7 @@ bot.on('start', function () {
                 if (args[1] != undefined) {
                     var action = args[1].toUpperCase();
                 }         
-
+                
                 // Take commands that were prefixed with ?
                 switch (command) {
                     case "sal":
@@ -73,10 +73,13 @@ bot.on('start', function () {
                         
                         break;
                     case "train":
-                        Train.train(action, bot, channel, params);
+                        Train.train(formatted, action, bot, channel, params);
                         break;
                     case "sup":    
                         Sup.sup(formatted, action, bot, channel, params);                       
+                        break;
+                    case "git":
+                        bot.postMessage(channel, Helpers.blockquoteBuilder('Wubot på GitHub','https://github.com/RarexWU16/wubot/tree/dev', 'Kolla gärna på issues!'), params);
                         break;
                     default:
                         bot.postMessage(channel, "Finns inget matchande kommando!", { icon_emoji: ":x:" });

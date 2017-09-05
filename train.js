@@ -1,14 +1,20 @@
 var Helpers = require('./helpers.js');
 
 module.exports = {
-    train: function (action, bot, channel, params) {
+    train: function (formatted, action, bot, channel, params) {
 
         var trainApi = 'http://api.trafikinfo.trafikverket.se/v1.2/data.json';
         var location;
         var toLocation;
         var toLocationLong;
 
+        if (formatted.indexOf(" ") === -1) { //TODO 
+            bot.postMessage(channel, "Felaktigt kommando.", params);
+            return;
+        }
+
         switch (action) {
+
             case 'JÖNKÖPING':
                 location = 'Jö';
                 toLocation = 'V';
@@ -20,13 +26,14 @@ module.exports = {
                 toLocationLong = 'Jönköping'
                 location = 'V';
                 action = 'Värnamo';
-                console.log(action + "värnamo")
                 break;
             default:
-                toLocation = 'Jö';
-                toLocationLong = 'Jönköping'
-                location = 'V';
-                action = 'Värnamo';
+                //toLocation = 'Jö';
+                //toLocationLong = 'Jönköping'
+                //location = 'V';
+                //action = 'Värnamo';
+                //console.log(action + "default")
+                bot.postMessage(channel, "Finns ingen matchande plats!", { icon_emoji: ":station:" });
                 break;
         }
 

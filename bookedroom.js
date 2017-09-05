@@ -34,7 +34,6 @@ module.exports = {
                         var endFull = new Date(bookings[i].end)
                         var end = Helpers.addZero(endFull.getHours()) + ":" + Helpers.addZero(endFull.getMinutes());
 
-                        //reply += "*" + bookings[i].text.split(",")[0] + "*\n" + start + "-" + end + " \n" + x.name + " \n----------------\n";
                         reply = Helpers.blockquoteBuilder(bookings[i].text.split(",")[0], start + "-" + end, x.name);
 
                         return x;
