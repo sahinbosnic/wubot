@@ -14,7 +14,7 @@ module.exports = {
         });
 
         if (user.length <= 0) {
-            bot.postMessage(channel, "Ingen användare med det namnet!", params);
+            bot.postMessage(channel, "Ingen anvÃ¤ndare med det namnet!", params);
             return;
         }
 
