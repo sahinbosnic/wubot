@@ -1,36 +1,42 @@
 var Helpers = require('./helpers.js');
 
 module.exports = {
-    train: function (action, bot, channel, params) {
+    train: function (formatted, action, bot, channel, params) {
 
         var trainApi = 'http://api.trafikinfo.trafikverket.se/v1.2/data.json';
         var location;
         var toLocation;
         var toLocationLong;
 
+        if (formatted.indexOf(" ") === -1) { //TODO 
+            bot.postMessage(channel, "Felaktigt kommando.", params);
+            return;
+        }
+
         switch (action) {
             case 'JKPG':
-                location = 'Jö';
+                location = 'JÃ¶';
                 toLocation = 'V';
-                toLocationLong = 'Vörnamo'
-                action = 'Jönköping';
+                toLocationLong = 'VÃ¶rnamo'
+                action = 'JÃ¶nkÃ¶ping';
                 break;
             case 'VNMO':
-                toLocation = 'Jö';
-                toLocationLong = 'Jönköping'
+                toLocation = 'JÃ¶';
+                toLocationLong = 'JÃ¶nkÃ¶ping'
                 location = 'V';
-                action = 'Värnamo';
-                console.log(action + "Värnamo")
+                action = 'VÃ¤rnamo';
                 break;
             default:
-                toLocation = 'Jö';
-                toLocationLong = 'Jönköping'
+                toLocation = 'JÃ¶';
+                toLocationLong = 'JÃ¶nkÃ¶ping'
                 location = 'V';
-                action = 'Värnamo';
+                action = 'VÃ¤rnamo';
+                //bot.postMessage(channel, "Finns ingen matchande plats!", { icon_emoji: ":station:" });
+
                 break;
         }
 
-        var response = '---Tåg från ' + action + '---';
+        var response = '---TÃ¥g frÃ¥n ' + action + '---';
         var trains = Helpers.getTrains(location, trainApi);
         
         for (var i = 0; i < trains.RESPONSE.RESULT[0].TrainAnnouncement.length; i++) {
