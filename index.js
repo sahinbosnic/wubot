@@ -61,13 +61,36 @@ bot.on('start', function () {
                         BookedRoom.bookedRoom(formatted, action, bot, channel, params);
                         break;
                     case "help":
-
-                        bot.postMessage(channel, Helpers.blockquoteBuilder('Bokad sal', '?sal <params>', 'Kollar vilken sal som är bokad baserat på params. tex. `wu16`'), params);
-                        bot.postMessage(channel, Helpers.blockquoteBuilder('Tågresa', '?train <params>', 'Skriv antingen `VNMO` eller `JKPG` för att få rätt tid.'), params);
-                        bot.postMessage(channel, Helpers.blockquoteBuilder('Hälsning', '?sup <username>', 'Skriv in en användare så hälsar Wubot på hen.'), params);
-                        bot.postMessage(channel, Helpers.blockquoteBuilder('Länkar', '?links', 'Visar en lista med bra länkar för dig som student.'), params);
-                        bot.postMessage(channel, Helpers.blockquoteBuilder('Hjälp', '?help', 'Tar fram detta meddelandet.'), params);
+                        var helpDescriptions = [
+                            {
+                                category: "Bokad sal",
+                                commands: [{
+                                    command: '?sal <params>',
+                                    description: 'Kollar vilken sal som är bokad baserat på params. tex. `wu16`'
+                                },
+                                {
+                                    command: '?sal <params>',
+                                    description: 'Kollar vilken sal som är bokad baserat på params. tex. `wu16`'
+                                }]
+                            },
+                            {
+                                category: "Tågresa",
+                                commands: [{
+                                    command: '?train <params>',
+                                    description: 'Skriv antingen `VNMO` eller `JKPG` för att få rätt tid.'
+                                }]
+                            },
+                            {
+                                category: 'Hälsning',
+                                commands: [{
+                                    command: '?sup <username>',
+                                    description: 'Skriv in en användare så hälsar Wubot på hen.'
+                                }]
+                            }
+                        ];
                         
+                        bot.postMessage(channel, Helpers.helpDescriptionBuilder(helpDescriptions), params); 
+
                         break;
                     case "train":
                         Train.train(formatted, action, bot, channel, params);
@@ -87,6 +110,7 @@ bot.on('start', function () {
                         bot.postMessage(channel, "Finns inget matchande kommando!", { icon_emoji: ":x:" });
                         break;
                 }
+                
             }
 
             // Words that the bot listens for and reacts to

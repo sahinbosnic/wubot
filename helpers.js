@@ -66,6 +66,17 @@ module.exports = {
         if (title === 'null') {
             return '`' + command + '` - ' + description + '\n';
         }
-        
+
+    },
+    helpDescriptionBuilder: function (descriptions) {
+        var text = '>>>';
+
+        for (var i = 0; i < descriptions.length; i++) {
+            text += '*' + descriptions[i].category + '*\n';
+            for (var y = 0; y < descriptions[i].commands.length; y++) {
+                text += '`' + descriptions[i].commands[y].command + '` - ' + descriptions[i].commands[y].description + '\n';
+            }
+        }
+        return text;
     }
 }
