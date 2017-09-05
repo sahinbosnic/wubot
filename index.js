@@ -61,16 +61,12 @@ bot.on('start', function () {
                         BookedRoom.bookedRoom(formatted, action, bot, channel, params);
                         break;
                     case "help":
-                        var bookedRoomDescription = Helpers.blockquoteBuilder('Bokad sal', '?sal <params>', 'Kollar vilken sal som är bokad baserat på params. tex. `wu16`');
-                        var trainDescription = Helpers.blockquoteBuilder('Tågresa', '?train <params>', 'Skriv antingen `VNMO` eller `JKPG` för att få rätt tid.');
-                        var supDescription = Helpers.blockquoteBuilder('Hälsning', '?sup <username>', 'Skriv in en användare så hälsar Wubot på hen.');
-                        var helpDescription = Helpers.blockquoteBuilder('Hjälp', '?help', 'Tar fram detta meddelandet.');
 
-                        
-                        bot.postMessage(channel, bookedRoomDescription, params);
-                        bot.postMessage(channel, trainDescription, params);
-                        bot.postMessage(channel, supDescription, params);
-                        bot.postMessage(channel, helpDescription, params);
+                        bot.postMessage(channel, Helpers.blockquoteBuilder('Bokad sal', '?sal <params>', 'Kollar vilken sal som är bokad baserat på params. tex. `wu16`'), params);
+                        bot.postMessage(channel, Helpers.blockquoteBuilder('Tågresa', '?train <params>', 'Skriv antingen `VNMO` eller `JKPG` för att få rätt tid.'), params);
+                        bot.postMessage(channel, Helpers.blockquoteBuilder('Hälsning', '?sup <username>', 'Skriv in en användare så hälsar Wubot på hen.'), params);
+                        bot.postMessage(channel, Helpers.blockquoteBuilder('Länkar', '?links', 'Visar en lista med bra länkar för dig som student.'), params);
+                        bot.postMessage(channel, Helpers.blockquoteBuilder('Hjälp', '?help', 'Tar fram detta meddelandet.'), params);
                         
                         break;
                     case "train":

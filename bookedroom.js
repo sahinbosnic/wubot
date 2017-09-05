@@ -23,7 +23,7 @@ module.exports = {
             }
         });
 
-        //var reply = "----------------\n";
+
         var reply;
         var resources = parsedData.resources.filter(function (x) {
             if (bookings.length >= 0) {
