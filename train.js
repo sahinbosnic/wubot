@@ -1,4 +1,4 @@
-var Helpers = require('./helpers.js');
+﻿var Helpers = require('./helpers.js');
 
 module.exports = {
     train: function (formatted, action, bot, channel, params) {
@@ -33,6 +33,7 @@ module.exports = {
                 //action = 'Värnamo';
                 //console.log(action + "default")
                 bot.postMessage(channel, "Finns ingen matchande plats!", { icon_emoji: ":station:" });
+                action = 'Värnamo';
                 break;
         }
 
