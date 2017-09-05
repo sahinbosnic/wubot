@@ -1,4 +1,4 @@
-﻿// https://www.npmjs.com/package/slackbots
+// https://www.npmjs.com/package/slackbots
 var SlackBot = require('slackbots');
 
 // Settings file for the bot
@@ -12,6 +12,7 @@ var Train = require('./train.js');
 
 var Sup = require('./sup.js');
 
+var Links = require('./links.js');
 
 
 //////////// Setup /////////////////
@@ -81,7 +82,7 @@ bot.on('start', function () {
                         Sup.sup(formatted, action, bot, channel, params);                       
                         break;
                     case "links":
-                        Helpers.getLinks(bot, channel, params);
+                        Links.getLinks(bot, channel, params);
                         break;     
                     case "git":
                         bot.postMessage(channel, Helpers.blockquoteBuilder('Wubot på GitHub','https://github.com/RarexWU16/wubot/tree/dev', 'Kolla gärna på issues!'), params);

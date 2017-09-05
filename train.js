@@ -15,30 +15,30 @@ module.exports = {
 
         switch (action) {
             case 'JKPG':
-                location = 'Jö';
+                location = 'JÃ¶';
                 toLocation = 'V';
-                toLocationLong = 'Värnamo'
-                action = 'Jönköping';
+                toLocationLong = 'VÃ¤rnamo'
+                action = 'JÃ¶nkÃ¶ping';
                 break;
             case 'VNMO':
-                toLocation = 'Jö';
-                toLocationLong = 'Jönköping'
+                toLocation = 'JÃ¶';
+                toLocationLong = 'JÃ¶nkÃ¶ping'
                 location = 'V';
-                action = 'Värnamo';
+                action = 'VÃ¤rnamo';
                 break;
             default:
-                //toLocation = 'Jö';
-                //toLocationLong = 'Jönköping'
+                //toLocation = 'JÃ¶';
+                //toLocationLong = 'JÃ¶nkÃ¶ping'
                 //location = 'V';
-                //action = 'Värnamo';
+                //action = 'VÃ¤rnamo';
                 //console.log(action + "default")
                 bot.postMessage(channel, "Finns ingen matchande plats!", { icon_emoji: ":station:" });
                 break;
         }
 
-        var response = '---Tåg från ' + action + '---';
+        var response = '---TÃ¥g frÃ¥n ' + action + '---';
         var trains = Helpers.getTrains(location, trainApi);
-        
+
         for (var i = 0; i < trains.RESPONSE.RESULT[0].TrainAnnouncement.length; i++) {
             if (trains.RESPONSE.RESULT[0].TrainAnnouncement[i].ToLocation[0].LocationName == toLocation) {
                 response += '\n Till ' + toLocationLong + ' : ' + trains.RESPONSE.RESULT[0].TrainAnnouncement[i].AdvertisedTimeAtLocation.split('T').pop();
