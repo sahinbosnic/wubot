@@ -1,4 +1,4 @@
-// https://www.npmjs.com/package/slackbots
+﻿// https://www.npmjs.com/package/slackbots
 var SlackBot = require('slackbots');
 
 // Settings file for the bot
@@ -39,7 +39,7 @@ bot.on('start', function () {
         // All ingoing events https://api.slack.com/rtm 
         var channel = data.channel;
         var message = data.text;
-
+        
         if (message !== undefined && data.user !== undefined) {
             var formatted = message.toLowerCase().trim();
 
@@ -53,7 +53,7 @@ bot.on('start', function () {
                 if (args[1] != undefined) {
                     var action = args[1].toUpperCase();
                 }         
-
+                
                 // Take commands that were prefixed with ?
                 switch (command) {
                     case "sal":
@@ -73,7 +73,7 @@ bot.on('start', function () {
                         
                         break;
                     case "train":
-                        Train.train(action, bot, channel, params);
+                        Train.train(formatted, action, bot, channel, params);
                         break;
                     case "jquery":
                         bot.postMessage(channel, "http://io.gwiddle.co.uk/needsmorejquery/", params);     
@@ -83,6 +83,9 @@ bot.on('start', function () {
                     case "links":
                         Helpers.getLinks(bot, channel, params);
                         break;     
+                    case "git":
+                        bot.postMessage(channel, Helpers.blockquoteBuilder('Wubot på GitHub','https://github.com/RarexWU16/wubot/tree/dev', 'Kolla gärna på issues!'), params);
+                        break;
                     default:
                         bot.postMessage(channel, "Finns inget matchande kommando!", { icon_emoji: ":x:" });
                         break;
