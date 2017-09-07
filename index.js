@@ -1,71 +1,46 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+// https://www.npmjs.com/package/slackbots
 var SlackBot = require('slackbots');
+
+// Settings file for the bot
 var Settings = require('./appsettings.json');
 
+var BookedRoom = require('./bookedroom.js');
+
+var Helpers = require('./helpers.js');
+
+var Train = require('./train.js');
+
+var Sup = require('./sup.js');
+
+var Links = require('./links.js');
 
 
 //////////// Setup /////////////////
 
-// create a bot 
+// Add a bot https://my.slack.com/services/new/bot and put the token.
 var bot = new SlackBot({
-    token: Settings.botToken, // Add a bot https://my.slack.com/services/new/bot and put the token  
+    token: Settings.botToken, 
     name: 'Wubot'
 });
 
 var defaultMonkey = Settings.defaultIcon;
-//endpoint for booked rooms
-var bookedRooms = 'http://boka.gummifabriken.nu/api/schedule/getAsGuest/';
 
 
-
-//////////// Helpers ///////////////
-
-// GET function
-function httpGet(theUrl) {
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("GET", theUrl, false);
-    xmlHttp.send(null);
-    return xmlHttp.responseText;
-}
-
-// Add zero
-function addZero(i) {
-    if (i < 10) {
-        i = "0" + i;
-    }
-    return i;
-}
-
-function randomIntFromInterval(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-//randomize monkeyface
-var getRandomMonkey = function () {
-    switch (randomIntFromInterval(0, 2)) {
-        case 0:
-            return ":see_no_evil:";
-        case 1:
-            return ":hear_no_evil:";
-        case 2:
-            return ":speak_no_evil:";
-    }
-}
 
 /////////////// Events ////////////////////
     
 bot.on('start', function () {
-    // more information about additional params https://api.slack.com/methods/chat.postMessage 
+    // More information about additional params https://api.slack.com/methods/chat.postMessage 
     var params = {
         icon_emoji: ':monkey_face:'
     };
 
     // Listens for a message event in any channel the bot is member.
     bot.on('message', function (data) {
-        // all ingoing events https://api.slack.com/rtm 
+        // All ingoing events https://api.slack.com/rtm 
         var channel = data.channel;
         var message = data.text;
-
+        
         if (message !== undefined && data.user !== undefined) {
             var formatted = message.toLowerCase().trim();
 
@@ -79,74 +54,80 @@ bot.on('start', function () {
                 if (args[1] != undefined) {
                     var action = args[1].toUpperCase();
                 }         
-
+                
                 // Take commands that were prefixed with ?
                 switch (command) {
                     case "sal":
-
-                        // Will kick if there is no action specified
-                        if (formatted.indexOf(" ") === -1) { //TODO 
-                            bot.postMessage(channel, "Felaktigt kommando.", params);
-                            return;
-                        }
-
-                        var response = httpGet(bookedRooms);
-
-                        var parsedData = JSON.parse(response);
-
-                        var bookings = parsedData.bookings.filter(function (x) {
-                            var name = x.text.toUpperCase();
-
-                            if (name.indexOf(action) !== -1) {
-                                return x;
-                            }
-                        });
-
-                        var reply = "----------------\n";
-                        var resources = parsedData.resources.filter(function (x) {
-                            if (bookings.length >= 0) {
-                                for (var i = 0; i < bookings.length; i++) {
-                                    if (bookings[i].resource == x.id) {
-                                        var startFull = new Date(bookings[i].start);
-                                        var start = addZero(startFull.getHours()) + ":" + addZero(startFull.getMinutes());
-                                        var endFull = new Date(bookings[i].end)
-                                        var end = addZero(endFull.getHours()) + ":" + addZero(endFull.getMinutes());
-
-                                        reply += "*" + bookings[i].text.split(",")[0] + "*\n" + start + "-" + end + " \n" + x.name + " \n----------------\n";
-
-                                        return x;
-                                    }
-                                }
-                            }
-                        });
-
-                        bot.postMessage(channel, reply, params);
-
+                        BookedRoom.bookedRoom(formatted, action, bot, channel, params);
                         break;
                     case "help":
-                        bot.postMessage(channel, "'?sal <klass>' - kollar vilken sal som �r bokad f�r klass.\n'?help' - Tar fram detta meddelandet.", params);
+                        var helpDescriptions = [
+                            {
+                                category: "Bokad sal",
+                                commands: [{
+                                    command: '?sal <params>',
+                                    description: 'Kollar vilken sal som är bokad baserat på params. tex. `wu16`'
+                                },
+                                {
+                                    command: '?sal <params>',
+                                    description: 'Kollar vilken sal som är bokad baserat på params. tex. `wu16`'
+                                }]
+                            },
+                            {
+                                category: "Tågresa",
+                                commands: [{
+                                    command: '?train <params>',
+                                    description: 'Skriv antingen `VNMO` eller `JKPG` för att få rätt tid.'
+                                }]
+                            },
+                            {
+                                category: 'Hälsning',
+                                commands: [{
+                                    command: '?sup <username>',
+                                    description: 'Skriv in en användare så hälsar Wubot på hen.'
+                                }]
+                            }
+                        ];
+                        
+                        bot.postMessage(channel, Helpers.helpDescriptionBuilder(helpDescriptions), params); 
+
+                        break;
+                    case "train":
+                        Train.train(formatted, action, bot, channel, params);
+                        break;
+                    case "jquery":
+                        bot.postMessage(channel, "http://io.gwiddle.co.uk/needsmorejquery/", params);     
+                    case "sup":    
+                        Sup.sup(formatted, action, bot, channel, params);                       
+                        break;
+                    case "links":
+                        Links.getLinks(bot, channel, params);
+                        break;     
+                    case "git":
+                        bot.postMessage(channel, Helpers.blockquoteBuilder('Wubot på GitHub','https://github.com/RarexWU16/wubot/tree/dev', 'Kolla gärna på issues!'), params);
                         break;
                     default:
                         bot.postMessage(channel, "Finns inget matchande kommando!", { icon_emoji: ":x:" });
                         break;
                 }
+                
             }
 
-            // words that the bot listens for and reacts to
-            if (formatted.indexOf("java ") !== -1) {
-                params.icon_emoji = getRandomMonkey();
+            // Words that the bot listens for and reacts to
+            if (formatted.indexOf("java ") !== -1) { //TODO Fix so that if the next letter after the word is not a space, return without the bot posting a message.
+                params.icon_emoji = Helpers.getRandomMonkey();
                 bot.postMessage(channel, "java...", params);
                 params.icon_emoji = defaultMonkey;
                 return;
             }
 
             if (formatted.indexOf("php ") !== -1) {
-                params.icon_emoji = getRandomMonkey();
+                params.icon_emoji = Helpers.getRandomMonkey();
                 bot.postMessage(channel, "php...", params);
                 params.icon_emoji = defaultMonkey;
                 return;
             }
-
+            // Gives a link to "let me google it for you" 
             if (formatted.indexOf("hur ") !== -1) {
                 var q = encodeURIComponent(data.text);
                 bot.postMessage(channel, 'http://lmgtfy.com/?q=' + q, params);
